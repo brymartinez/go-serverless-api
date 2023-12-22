@@ -26,7 +26,8 @@ plugins:
 provider:
   name: aws
   runtime: go1.x
-
+  environment:
+    DB_CONNSTRING: ${ssm:/goserverlessapi/local/dbconnstring}
 # you can overwrite defaults here
   stage: ${opt:stage, 'local'}
   region: us-east-1
@@ -50,8 +51,7 @@ provider:
 #                - "/*"
 
 # you can define service wide environment variables here
-#  environment:
-#    variable1: value1
+
 
 package:
   patterns:
@@ -59,24 +59,36 @@ package:
     - ./bin/**
 
 functions:
-  hello:
-    handler: bin/hello
+  createArticle:
+    handler: bin/create_article
     events:
       - http:
-          path: /hello
+          path: /articles
+          method: post
+  createAuthor:
+    handler: bin/create_author
+    events:
+      - http:
+          path: /authors
+          method: post
+  getArticles:
+    handler: bin/get_articles
+    events:
+      - http:
+          path: /articles
           method: get
-  world:
-    handler: bin/world
+  getAuthors:
+    handler: bin/get_authors
     events:
       - http:
-          path: /world
+          path: /authors
           method: get
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
 # events:
 #    events:
-#      - httpApi:
+#      - http:
 #          path: /users/create
 #          method: get
 #      - websocket: $connect
